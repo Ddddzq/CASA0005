@@ -1,0 +1,45 @@
+---
+title: "hw4"
+author: "Dzq"
+date: "2022-11-02"
+output: html_document
+---
+
+```{r}
+
+library(tidyverse)
+library(dplyr)
+library(rgdal) 
+library(sf)
+library(janitor)
+library(tmap)
+library(tmaptools)
+library(countrycode)
+library(here)
+library(sp)
+
+```
+```{r}
+gender_index <- read.csv(here::here("wk4", "HDR21-22_Composite_indices_complete_time_series.csv"))
+world <- st_read(here::here("wk4", "World_Countries_(Generalized)", "World_Countries__Generalized_.shp"))
+```
+```{r}
+index_clean <-gender_index %>%
+  dplyr::select(starts_with("gii_2010"), starts_with("gii_2019"), starts_with("country")) %>%
+  mutate(gii_diff = gii_2019 - gii_2010)
+```
+```{r}
+shape <-world %>%
+  merge(.,
+       index_clean,
+        by.x="COUNTRY", 
+        by.y="country")
+```
+```{r}
+tmap_mode("plot")
+shape %>% 
+  qtm(., fill = "gii_diff")
+```
+
+```
+
